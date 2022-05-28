@@ -15,7 +15,7 @@ namespace Game_of_Life
     {
         #region Members
 
-        // The universe array
+        // The Universe Array
         bool[,] universe;
 
         // Drawing colors
@@ -32,12 +32,12 @@ namespace Game_of_Life
         public int uniWidth = Properties.Settings.Default.uniWidth; // Universe Width
         public int uniHeight = Properties.Settings.Default.uniHeight; // Universe Height
 
-        // Bools
+        // The Bools
         bool isToroidal = Properties.Settings.Default.isToridial;
         bool showNeighbors = Properties.Settings.Default.showNeighbors;
         bool gridcheck = Properties.Settings.Default.gridCheck;
         bool hudCheck = Properties.Settings.Default.hudCheck;
-        //Interval
+        // The Interval System
         public int interval = Properties.Settings.Default.interval; // timer speed
 
         // Cell Count
@@ -50,7 +50,29 @@ namespace Game_of_Life
         int generations = 0;
         #endregion
 
+        #region Font Method
+        public static Font GetAdjustedFont(Graphics graphics, string str, Font oFont, SizeF containerSize)
+        {    
+            for (int adjustedSize = (int)oFont.Size; adjustedSize >= 1; adjustedSize -= 4)
+            {
+                Font testFont = new Font(oFont.Name, adjustedSize, oFont.Style, GraphicsUnit.Pixel);
+
+                // Test with new size
+                SizeF adjustedSizeNew = graphics.MeasureString(str, testFont, (int)containerSize.Width);
+
+                if (containerSize.Height > Convert.ToInt32(adjustedSizeNew.Height))
+                {
+                    // Returns Font
+                    return testFont;
+                }
+            }
+            // Returns Font
+            return new Font(oFont.Name, 1, oFont.Style, GraphicsUnit.Pixel);
+        }
+        #endregion
+
         #region Form
+        //Creates the form for the game
         public Form1()
         {
             InitializeComponent();
@@ -64,26 +86,62 @@ namespace Game_of_Life
         #endregion
 
         #region Loader
+        private void ConditionChecks()
+        {
+            #region Toroidal & Finite
+            toroidalToolStripMenuItem.Checked = isToroidal;
+            if (isToroidal == false)
+            {
+                finiteToolStripMenuItem.Checked = true;
+            }
+            else
+            {
+                finiteToolStripMenuItem.Checked = false;
+            }
+            if (finiteToolStripMenuItem.Checked == false)
+            {
+                toroidalToolStripMenuItem.Checked = true;
+                isToroidal = true;
+            }
+            #endregion
+
+            #region Show Neighbors
+            neighborCountContextToolStripMenuItem1.Checked = showNeighbors;
+            neighborCountContextToolStripMenuItem1.Checked = showNeighbors;
+            #endregion
+
+            #region Grid
+            gridToolStripMenuItem.Checked = gridcheck;
+            gridToolContextStripMenuItem1.Checked = gridcheck;
+            #endregion
+
+            #region HUD
+            HUDToolStripMenuItem.Checked = hudCheck;
+            HUDToolContextStripMenuItem1.Checked = hudCheck;
+            #endregion
+        }
+        // This "Loader" loads all of the settings prior to playing the game.
         private void LoadSettings()
         {
-            // All of the settings to initialize at the start
+            // The settings will be initilizaed at the start of the game.
+            //Main settings to load.
 
+            universe = new bool[uniWidth, uniHeight]; // The universe array
             uniWidth = Properties.Settings.Default.uniWidth; // The universe width
             uniHeight = Properties.Settings.Default.uniHeight; // The universe height
             interval = Properties.Settings.Default.interval; //  The timer speed
             graphicsPanel1.BackColor = Properties.Settings.Default.PanelColor; // The panel background
-            gridColor = Properties.Settings.Default.gridColor; // The inner grid
-            gridColorx10 = Properties.Settings.Default.gridColorx10; // The outer grid
-            cellColor = Properties.Settings.Default.cellColor; // The living cell color
             seed = Properties.Settings.Default.Seed; // The seed to generate from
             isToroidal = Properties.Settings.Default.isToridial; // The toroidal neighbor method
             showNeighbors = Properties.Settings.Default.showNeighbors; // The display neighbors
-            gridcheck = Properties.Settings.Default.gridCheck; // The display grid
-            hudCheck = Properties.Settings.Default.hudCheck; // The display hud
-            universe = new bool[uniWidth, uniHeight]; // The universe array
             StatusLabelInterval.Text = $"Interval = {interval}"; // The timer speed
             StatusLabelAlive.Text = $"Alive: {CellsLiving}"; // The live cells
             StatusLabelSeed.Text = $"Seed: {seed}"; // The seed to generate from
+            gridcheck = Properties.Settings.Default.gridCheck; // The display grid
+            hudCheck = Properties.Settings.Default.hudCheck; // The display hud
+            gridColor = Properties.Settings.Default.gridColor; // The inner grid
+            gridColorx10 = Properties.Settings.Default.gridColorx10; // The outer grid
+            cellColor = Properties.Settings.Default.cellColor; // The living cell color
         }
         #endregion
 
@@ -140,7 +198,7 @@ namespace Game_of_Life
         #endregion
 
         #region Timer
-        // The event called by the timer every Interval milliseconds.
+        // The method that calls the Timer every (Miliseconds)
         private void Timer_Tick(object sender, EventArgs e)
         {
             //Calls Next Gen
@@ -151,22 +209,44 @@ namespace Game_of_Life
         #endregion
 
         #region Paint
+        //The Painter
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
+            #region CellsLiving, Width, & Height
             // Cells that are living
             int CellsLiving = 0;
             // Calculate the width and height of each cell in pixels
-            // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
+            // THE CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
             float cellWidth = ((float)graphicsPanel1.ClientSize.Width) / ((float)universe.GetLength(0));
-            // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
+            // THE CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
             float cellHeight = ((float)graphicsPanel1.ClientSize.Height) / ((float)universe.GetLength(1));
+            #endregion
 
+            #region Brush/Pen
             // A Pen for drawing the grid lines (color, width)
             Pen gridPen = new Pen(gridColor, 1);
+            Pen gridPenx10 = new Pen(gridColorx10, 4);
 
-            // A Brush for filling living cells interiors (color)
+            // 'Brush' Alive Cells (color)
             Brush cellBrush = new SolidBrush(cellColor);
+            Brush cellBrushAlive = new SolidBrush(cellAlive);
+            // 'Brush' Dead Cells (color)
+            Brush cellBrushDead = new SolidBrush(cellDead);
+            #endregion
 
+            #region The Font
+            // Creates Font
+            Font font = new Font(new FontFamily("Arial"), 18);
+
+            // Text format for centering text
+            StringFormat drawFormat = new StringFormat();
+            // Center
+            drawFormat.LineAlignment = StringAlignment.Center;
+            drawFormat.Alignment = StringAlignment.Center;
+            // The neighbor count
+            #endregion
+
+            #region Paint System 1
             // The cells that are alive
             // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
@@ -194,66 +274,122 @@ namespace Game_of_Life
                     {
                         CellsLiving++;
                     }
-                    // Font Painter for Numbers
-                    Font font = new Font("Arial", 11, FontStyle.Bold, GraphicsUnit.Point);
-
-                    StringFormat stringFormat = new StringFormat();
-                    stringFormat.Alignment = StringAlignment.Center;
-                    stringFormat.LineAlignment = StringAlignment.Center;
-    
+                    // Update living cell status
+                    AliveStatus.Text = $"Alive: {CellsLiving}";
                     // Fill the cell with a brush if alive
-                    if (universe[x, y] == true && neighbors ==  0)
+                    if (showNeighbors == false && gridcheck == true)
                     {
-                        //Generates cells based on generation Alive / Dead.
-                        e.Graphics.FillRectangle(cellBrush, cellRect);
+                        e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
                     }
-                    else if (universe[x, y] == true && neighbors < 2)
-                    {
-                        e.Graphics.FillRectangle(cellBrush, cellRect);
-                        e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, cellRect, stringFormat);
-                    }
-                    else if(universe[x, y] == true && neighbors > 3)
+                    if (showNeighbors == false && universe[x, y] == true)
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
-                        e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, cellRect, stringFormat);
                     }
-                    else if (universe[x, y] == true && neighbors == 2)
+                    // if show neighbors is checked, draw them
+                    else if (showNeighbors == true)
                     {
-                        e.Graphics.FillRectangle(cellBrush, cellRect);
-                        e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, cellRect, stringFormat);
-                    }
-                    else if (universe[x, y] == true && neighbors == 2)
-                    {
-                        e.Graphics.FillRectangle(cellBrush, cellRect);
-                        e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Green, cellRect, stringFormat);
-                    }
-                    else if (universe[x, y] == true && neighbors == 3)
-                    {
-                        e.Graphics.FillRectangle(cellBrush, cellRect);
-                        e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Green, cellRect, stringFormat);
-                    }
-                    else if (universe[x, y] == false && neighbors == 3)
-                    {
-                        e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Green, cellRect, stringFormat);
-                    }
-                    else if(universe[x, y] == false && neighbors > 0)
-                    {
-                        e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, cellRect, stringFormat);
-                    }
-                    // Outline the cell with a pen
-                    e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
-                }
-                    //Update living cells text
-                    StatusLabelAlive.Text = $"Alive: {CellsLiving}";
-            }
+                        Font f = GetAdjustedFont(e.Graphics, neighbors.ToString(), font, cellRect.Size);
 
-            // Cleaning up pens and brushes
-            gridPen.Dispose();
+                        if (universe[x, y] == true && neighbors == 0)
+                        {
+                            // alive now and dead in the next gen, hide '0' string
+                            e.Graphics.FillRectangle(cellBrush, cellRect);
+                        }
+                        else if ((universe[x, y] == true && neighbors < 2))
+                        {
+                            // alive now and dead in the next gen
+                            e.Graphics.FillRectangle(cellBrush, cellRect);
+                            e.Graphics.DrawString(neighbors.ToString(), f, cellBrushDead, cellRect, drawFormat);
+                        }
+                        else if ((universe[x, y] == true && neighbors > 3))
+                        {
+                            // alive now and dead in the next gen
+                            e.Graphics.FillRectangle(cellBrush, cellRect);
+                            e.Graphics.DrawString(neighbors.ToString(), f, cellBrushDead, cellRect, drawFormat);
+                        }
+                        else if (universe[x, y] == true && neighbors == 2)
+                        {
+                            // alive now and in the next gen
+                            e.Graphics.FillRectangle(cellBrush, cellRect);
+                            e.Graphics.DrawString(neighbors.ToString(), f, cellBrushAlive, cellRect, drawFormat);
+                        }
+                        else if (universe[x, y] == true && neighbors == 3)
+                        {
+                            // alive now and in the next gen
+                            e.Graphics.FillRectangle(cellBrush, cellRect);
+                            e.Graphics.DrawString(neighbors.ToString(), f, cellBrushAlive, cellRect, drawFormat);
+                        }
+                        else if (universe[x, y] == false && neighbors == 3)
+                        {
+                            // dead now and alive in the next gen
+                            e.Graphics.DrawString(neighbors.ToString(), f, cellBrushAlive, cellRect, drawFormat);
+                        }
+                        else if (universe[x, y] == false && neighbors > 0)
+                        {
+                            // dead now and in the next gen, avoid '0' spam
+                            e.Graphics.DrawString(neighbors.ToString(), f, cellBrushDead, cellRect, drawFormat);
+                        }
+                        f.Dispose();
+                    }
+                    // Outlines Cell via Pen
+                    if (gridcheck == true)
+                    {
+                        //Draw if grid is enabled
+                        e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
+                    }
+                    // Grid x10 Display
+                    // Draw line for every 10th Cell if "Checked" (X)
+                    if (y % 10 == 0 && gridcheck == true)
+                    {
+                        e.Graphics.DrawLine(gridPenx10, 0, cellRect.Y, graphicsPanel1.Width, cellRect.Y);
+                    }
+                    // Draw line for every 10th Cell if "Checked" (Y)
+                    if (x % 10 == 0 && gridcheck == true)
+                    {
+                        e.Graphics.DrawLine(gridPenx10, cellRect.X, 0, cellRect.X, graphicsPanel1.Height);
+
+                    }
+                }
+            }
+            #endregion
+
+            #region Paint System 2
+            // Boundary System
+            string boundaryType;
+
+            if (isToroidal)
+            {
+                boundaryType = "Toroidal";
+            }
+            else
+            {
+                boundaryType = "Finite";
+            }
+            // Hud Display
+            string HUD =
+                $"Generations: {generations}\n" +
+                $"Cell Count: {CellsLiving}\n" +
+                $"Boundary Type: {boundaryType}\n" +
+                $"Universe Size: Width={uniWidth}, Height={uniHeight}";
+            // Display Hud if "Checked"
+            if (hudCheck == true)
+            {
+                e.Graphics.DrawString(HUD, font, Brushes.Aqua, 0, 0);
+            }
+            
+            // Clean Up
             cellBrush.Dispose();
+            cellBrushDead.Dispose();
+            cellBrushAlive.Dispose();
+            font.Dispose();
+            gridPen.Dispose();
+            gridPenx10.Dispose();
+            #endregion
         }
         #endregion
 
         #region LMB Method
+        //Left Mouse Click Method
         private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e)
         {
             // If the left mouse button was clicked
@@ -300,32 +436,33 @@ namespace Game_of_Life
         #endregion
 
         #region (Button)Exit, Start, Stop, Next, Skip, Slow
+        //Exit
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e) // This method exits the program when a user clicks the tool strip exit button.
         {
             this.Close();
         }
-
+        //Start
         private void Start_Click(object sender, EventArgs e) //Start Button
         {
             // Starts the game
             timer.Enabled = true;
             graphicsPanel1.Invalidate();
         }
-
+        //Stop
         private void Stop_Click(object sender, EventArgs e) // Stop Button
         {
             //Stops the game
             timer.Enabled = false;
             graphicsPanel1.Invalidate();
         }
-
+        //Next
         private void Next_Click(object sender, EventArgs e) // Skip Button
         {
             NextGeneration();
             timer.Enabled = false;
             graphicsPanel1.Invalidate();
         }
-
+        //Slow
         private void Slow_Click(object sender, EventArgs e) // Slow Button
         {
             timer.Interval = 1000;
@@ -376,6 +513,7 @@ namespace Game_of_Life
         #endregion
 
         #region Count Finite / Toroidal
+        //Finite
         private int CountNeighborsFinite(int x, int y)
         {
             int count = 0;
@@ -421,7 +559,7 @@ namespace Game_of_Life
             }
             return count;
         }
-
+        //Toroidal
         private int CountNeighborsToroidal(int x, int y)
         {
             int count = 0;
@@ -439,7 +577,10 @@ namespace Game_of_Life
                     // if xCheck is greater than or equal too xLen then set to 0
                     // if yCheck is greater than or equal too yLen then set to 0
 
-                    if (universe[xCheck, yCheck] == true) count++;
+                    if (universe[xCheck, yCheck])
+                    {
+                        count++;
+                    }
                 }
             }
             return count;
@@ -447,6 +588,7 @@ namespace Game_of_Life
         #endregion
 
         #region Randomize Method
+        //Random
         private void Randomize()
         {
             //Construct the Random and give it a seed.
@@ -474,6 +616,7 @@ namespace Game_of_Life
         #endregion
 
         #region File System
+        //Save
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog dlg = new SaveFileDialog();
@@ -523,7 +666,7 @@ namespace Game_of_Life
                 writer.Close();
             }
         }
-
+        //Open
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
@@ -617,7 +760,8 @@ namespace Game_of_Life
         }
         #endregion
 
-
+        #region Options Button System
+        //Options
         private void optionsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             // Construct the options form
@@ -673,7 +817,7 @@ namespace Game_of_Life
             // Repaint
             graphicsPanel1.Invalidate();
         }
-
+        //Reload
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Reload Save
@@ -683,7 +827,7 @@ namespace Game_of_Life
             // Repaint
             graphicsPanel1.Invalidate();
         }
-
+        //Reset
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Reset back to default
@@ -693,15 +837,92 @@ namespace Game_of_Life
             // Repaint
             graphicsPanel1.Invalidate();
         }
+        //Color
+        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Creating the Object Color
+            ColorDialog colorDialog = new ColorDialog();
+            // The Setter
+            colorDialog.Color = graphicsPanel1.BackColor; // The background color for the panel
+            if (DialogResult.OK == colorDialog.ShowDialog())
+            {
+                // The Getter
+                graphicsPanel1.BackColor = colorDialog.Color;// The background color for the panel
+            }
+            // Repaint
+            graphicsPanel1.Invalidate();
 
+        }
+        //Cell Color
+        private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Creating Color Object
+            ColorDialog colorDialog = new ColorDialog();
+            // The Setter
+            colorDialog.Color = cellColor; // Cell color that fills the rectangle
+            if (DialogResult.OK == colorDialog.ShowDialog())
+            {
+                // The Setter
+                cellColor = colorDialog.Color; // Cell color that fills the rectangle
+                graphicsPanel1.Invalidate();
+            }
+        }
+        //Grid Color
+        private void gridColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Creating Color Object
+            ColorDialog colorDialog = new ColorDialog();
+            // The Setter
+            colorDialog.Color = gridColor; // Inside Grid Color
+            if (DialogResult.OK == colorDialog.ShowDialog())
+            {
+                // The Getter
+                gridColor = colorDialog.Color; // Inside Grid Color
+                // Repaint
+                graphicsPanel1.Invalidate();
+            }
+        }
+        //Gridx10 Color
+        private void gridx10ColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Construct color dialog object
+            ColorDialog colorDialog = new ColorDialog();
+            // The Setter
+            colorDialog.Color = gridColorx10; // Outside Grid Color
+            if (DialogResult.OK == colorDialog.ShowDialog())
+            {
+                // The Getter
+                gridColorx10 = colorDialog.Color; // Outside Grid Color
+                // Repaint
+                graphicsPanel1.Invalidate();
+            }
+        }
+        //Grid
         private void gridToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Keep the tool strip equal to the context menu
-            gridToolStripMenuItem.Checked = gridToolStripMenuItem.Checked;
-            gridcheck = gridToolStripMenuItem.Checked;
+            gridToolStripMenuItem.Checked = gridToolStripMenuItem.Checked; //Check System
+            gridcheck = gridToolStripMenuItem.Checked; //Check System
             // Repaint
             graphicsPanel1.Invalidate();
         }
+        private void neighborCountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Keep the tool strip equal to the context menu
+            neighborCountContextToolStripMenuItem1.Checked = neighborCountToolStripMenuItem.Checked;
+            showNeighbors = neighborCountToolStripMenuItem.Checked;
+            // repaint
+            graphicsPanel1.Invalidate();
+        }
+        private void HUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Keep the tool strip equal to the context menu
+            HUDToolContextStripMenuItem1.Checked = HUDToolStripMenuItem.Checked;
+            hudCheck = HUDToolStripMenuItem.Checked;
+            // repaint
+            graphicsPanel1.Invalidate();
+        }
+        #endregion
 
         #region Finite and Toroidal Buttons
         private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
@@ -748,6 +969,65 @@ namespace Game_of_Life
             Properties.Settings.Default.uniWidth = uniWidth;
             Properties.Settings.Default.interval = interval;
         }
+        #endregion
+
+        #region Context Menu Strip
+
+        #region View
+        //View context strip button click
+        //Hud
+        private void HUDToolContextStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // Keeps the context menu equal to toolstrip
+            HUDToolContextStripMenuItem1.Checked = HUDToolContextStripMenuItem1.Checked;
+            hudCheck = HUDToolContextStripMenuItem1.Checked;
+            // Repaint
+            graphicsPanel1.Invalidate();
+        }
+        //Grid
+        private void gridToolContextStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // Keep the context menu equal to the tool strip
+            gridToolContextStripMenuItem1.Checked = gridColorToolStripMenuItem.Checked;
+            gridcheck = gridColorToolStripMenuItem.Checked;
+            // repaint
+            graphicsPanel1.Invalidate();
+        }
+        //Neighbor Count
+        private void neighborCountContextToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // Keeps the context menu equal to toolstrip
+            neighborCountContextToolStripMenuItem1.Checked = neighborCountContextToolStripMenuItem1.Checked;
+            showNeighbors = neighborCountContextToolStripMenuItem1.Checked;
+            // Repaint
+            graphicsPanel1.Invalidate();
+        }
+        #endregion
+
+        #region Color
+        //Color context button click
+        //Back Color
+        private void backColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+        //Cell Color
+        private void cellColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+        //Grid Color
+        private void gridColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+        //Grid x10 Color
+        private void gridx10ColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+        #endregion
+
         #endregion
     }
 }
