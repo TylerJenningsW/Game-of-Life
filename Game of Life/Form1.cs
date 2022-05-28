@@ -143,7 +143,9 @@ namespace Game_of_Life
         // The event called by the timer every Interval milliseconds.
         private void Timer_Tick(object sender, EventArgs e)
         {
+            //Calls Next Gen
             NextGeneration();
+            //Repaint
             graphicsPanel1.Invalidate();
         }
         #endregion
@@ -305,21 +307,22 @@ namespace Game_of_Life
 
         private void Start_Click(object sender, EventArgs e) //Start Button
         {
-            timer.Interval = 100;
-            timer.Start();
+            // Starts the game
+            timer.Enabled = true;
             graphicsPanel1.Invalidate();
         }
 
         private void Stop_Click(object sender, EventArgs e) // Stop Button
         {
-            timer.Stop();
+            //Stops the game
+            timer.Enabled = false;
             graphicsPanel1.Invalidate();
         }
 
         private void Next_Click(object sender, EventArgs e) // Skip Button
         {
             NextGeneration();
-            timer.Stop();
+            timer.Enabled = false;
             graphicsPanel1.Invalidate();
         }
 
@@ -611,6 +614,130 @@ namespace Game_of_Life
                 // Repaint
                 graphicsPanel1.Invalidate();
             }
+        }
+        #endregion
+
+
+        private void optionsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // Construct the options form
+            Options optionsDialog = new Options();
+            //Check to see if universe updates
+            int tempW = uniWidth;
+            int tempH = uniHeight;
+            //The Setters
+            optionsDialog.TimeInterval = interval;  // Timer Speed
+            optionsDialog.UniverseWidth = uniWidth;   // The Universe Width
+            optionsDialog.UniverseHeight = uniHeight; // The Universe Height
+            if (DialogResult.OK == optionsDialog.ShowDialog())
+            {
+                // The Getters
+                uniHeight = optionsDialog.UniverseHeight; // The Universe Height
+                uniWidth = optionsDialog.UniverseWidth;   // The Universe Width
+                interval = optionsDialog.TimeInterval;  // The Timer Speed
+                // Update the timer speed
+                timer.Interval = interval;
+                // Update the timer status Label
+                StatusLabelInterval.Text = $"Interval: {interval}";
+            }
+            // Check to see if the universe is different
+            if (tempW != uniWidth || tempH != uniHeight)
+            {
+                // Get a copy
+                bool[,] temp = universe;
+                for (int y = 0; y < temp.GetLength(1); y++)
+                {
+                    // Iterate through the universe in the x, left to right
+                    for (int x = 0; x < temp.GetLength(0); x++)
+                    {
+                        // And refill the array
+                        temp[x, y] = universe[x, y];
+                    }
+                }
+                // Then new
+                universe = new bool[uniWidth, uniHeight];
+                for (int y = 0; y < universe.GetLength(1); y++)
+                {
+                    // Iterate through the universe in the x, left to right
+                    for (int x = 0; x < universe.GetLength(0); x++)
+                    {
+                        // Makesure it's in range
+                        if (temp.GetLength(1) > y && temp.GetLength(0) > x)
+                        {
+                            // Refill Array
+                            universe[x, y] = temp[x, y];
+                        }
+                    }
+                }
+            }
+            // Repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Reload Save
+            Properties.Settings.Default.Reload();
+            // Load Settings
+            LoadSettings();
+            // Repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Reset back to default
+            Properties.Settings.Default.Reset();
+            // Load Settings
+            LoadSettings();
+            // Repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void gridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Keep the tool strip equal to the context menu
+            gridToolStripMenuItem.Checked = gridToolStripMenuItem.Checked;
+            gridcheck = gridToolStripMenuItem.Checked;
+            // Repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        #region Finite and Toroidal Buttons
+        private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Keep Toroidal and Finite opposite
+            if (toroidalToolStripMenuItem.Checked == false)
+            {
+                finiteToolStripMenuItem.Checked = true;
+                isToroidal = false;
+            }
+            else
+            {
+                finiteToolStripMenuItem.Checked = false;
+                isToroidal = true;
+
+            }
+            // Repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void finiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Keep Toroidal and Finite opposite
+            if (finiteToolStripMenuItem.Checked == false)
+            {
+                toroidalToolStripMenuItem.Checked = true;
+                isToroidal = true;
+            }
+            else
+            {
+                toroidalToolStripMenuItem.Checked = false;
+                isToroidal = false;
+
+            }
+            // Repaint
+            graphicsPanel1.Invalidate();
         }
         #endregion
 
