@@ -572,15 +572,31 @@ namespace Game_of_Life
                     int xCheck = x + xOffset;
                     int yCheck = y + yOffset;
                     // if xOffset and yOffset are both equal to 0 then continue
-                    // if xCheck is less than 0 then set to xLen - 1
-                    // if yCheck is less than 0 then set to yLen - 1
-                    // if xCheck is greater than or equal too xLen then set to 0
-                    // if yCheck is greater than or equal too yLen then set to 0
-
-                    if (universe[xCheck, yCheck])
+                    if (xOffset == 0 && yOffset == 0)
                     {
-                        count++;
+                        continue;
                     }
+                    // if xCheck is less than 0 then set to xLen - 1
+                    if (xCheck < 0)
+                    {
+                        xCheck = xLen - 1;
+                    }
+                    // if yCheck is less than 0 then set to yLen - 1
+                    if (yCheck < 0)
+                    {
+                        yCheck = yLen - 1;
+                    }
+                    // if xCheck is greater than or equal too xLen then set to 0
+                    if (xCheck >= xLen)
+                    {
+                        xCheck = 0;
+                    }
+                    // if yCheck is greater than or equal too yLen then set to 0
+                    if (yCheck >= yLen)
+                    {
+                        yCheck = 0;
+                    }
+                    if (universe[xCheck, yCheck] == true) count++;
                 }
             }
             return count;
@@ -901,7 +917,7 @@ namespace Game_of_Life
         private void gridToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Keep the tool strip equal to the context menu
-            gridToolStripMenuItem.Checked = gridToolStripMenuItem.Checked; //Check System
+            gridToolContextStripMenuItem1.Checked = gridToolStripMenuItem.Checked; //Check System
             gridcheck = gridToolStripMenuItem.Checked; //Check System
             // Repaint
             graphicsPanel1.Invalidate();
@@ -962,15 +978,6 @@ namespace Game_of_Life
         }
         #endregion
 
-        #region Form Closed
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Properties.Settings.Default.uniHeight = uniHeight; ;
-            Properties.Settings.Default.uniWidth = uniWidth;
-            Properties.Settings.Default.interval = interval;
-        }
-        #endregion
-
         #region Context Menu Strip
 
         #region View
@@ -979,7 +986,7 @@ namespace Game_of_Life
         private void HUDToolContextStripMenuItem1_Click(object sender, EventArgs e)
         {
             // Keeps the context menu equal to toolstrip
-            HUDToolContextStripMenuItem1.Checked = HUDToolContextStripMenuItem1.Checked;
+            HUDToolStripMenuItem.Checked = HUDToolContextStripMenuItem1.Checked;
             hudCheck = HUDToolContextStripMenuItem1.Checked;
             // Repaint
             graphicsPanel1.Invalidate();
@@ -988,8 +995,8 @@ namespace Game_of_Life
         private void gridToolContextStripMenuItem1_Click(object sender, EventArgs e)
         {
             // Keep the context menu equal to the tool strip
-            gridToolContextStripMenuItem1.Checked = gridColorToolStripMenuItem.Checked;
-            gridcheck = gridColorToolStripMenuItem.Checked;
+            gridToolStripMenuItem.Checked = gridToolContextStripMenuItem1.Checked;
+            gridcheck = gridToolContextStripMenuItem1.Checked;
             // repaint
             graphicsPanel1.Invalidate();
         }
@@ -997,7 +1004,7 @@ namespace Game_of_Life
         private void neighborCountContextToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             // Keeps the context menu equal to toolstrip
-            neighborCountContextToolStripMenuItem1.Checked = neighborCountContextToolStripMenuItem1.Checked;
+            neighborCountToolStripMenuItem.Checked = neighborCountContextToolStripMenuItem1.Checked;
             showNeighbors = neighborCountContextToolStripMenuItem1.Checked;
             // Repaint
             graphicsPanel1.Invalidate();
@@ -1029,5 +1036,15 @@ namespace Game_of_Life
         #endregion
 
         #endregion
+
+        #region Form Closed
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Properties.Settings.Default.uniHeight = uniHeight; ;
+            Properties.Settings.Default.uniWidth = uniWidth;
+            Properties.Settings.Default.interval = interval;
+        }
+        #endregion
+
     }
 }
