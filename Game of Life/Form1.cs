@@ -1045,6 +1045,5 @@ namespace Game_of_Life
             Properties.Settings.Default.interval = interval;
         }
         #endregion
-
     }
 }
