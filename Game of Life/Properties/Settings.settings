@@ -21,22 +21,22 @@
       <Value Profile="(Default)">523</Value>
     </Setting>
     <Setting Name="gridColorx10" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">DarkGray</Value>
+      <Value Profile="(Default)">Black</Value>
     </Setting>
     <Setting Name="interval" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">222</Value>
     </Setting>
     <Setting Name="isToridial" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="showNeighbors" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="gridCheck" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="hudCheck" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -69,6 +69,7 @@
     <Compile Include="Random gen Form.Designer.cs">
       <DependentUpon>Random gen Form.cs</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

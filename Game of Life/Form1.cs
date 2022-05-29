@@ -36,7 +36,7 @@ namespace Game_of_Life
         bool isToroidal = Properties.Settings.Default.isToridial;
         bool showNeighbors = Properties.Settings.Default.showNeighbors;
         bool gridcheck = Properties.Settings.Default.gridCheck;
-        bool hudcheck = Properties.Settings.Default.hudCheck;
+        bool hudCheck = Properties.Settings.Default.hudCheck;
         // The Interval System
         public int interval = Properties.Settings.Default.interval; // timer speed
 
@@ -48,44 +48,6 @@ namespace Game_of_Life
 
         // Generation count
         int generations = 0;
-        #endregion
-
-        #region Checker
-        private void ConditionChecks()
-        {
-            #region The HUD
-            HUDToolStripMenuItem.Checked = hudcheck;
-            HUDToolContextStripMenuItem1.Checked = hudcheck;
-            #endregion
-
-            #region Toroidal / Finite
-            toroidalToolStripMenuItem.Checked = isToroidal;
-            if (isToroidal == false)
-            {
-                finiteToolStripMenuItem.Checked = true;
-            }
-            else
-            {
-                finiteToolStripMenuItem.Checked = false;
-            }
-            if (finiteToolStripMenuItem.Checked == false)
-            {
-                toroidalToolStripMenuItem.Checked = true;
-                isToroidal = true;
-            }
-            #endregion
-
-            #region The Grid
-            gridToolStripMenuItem.Checked = gridcheck;
-            gridToolContextStripMenuItem1.Checked = gridcheck;
-            #endregion
-
-            #region Show Neighbors
-            neighborCountToolStripMenuItem.Checked = showNeighbors;
-            neighborCountContextToolStripMenuItem1.Checked = showNeighbors;
-            #endregion
-
-        }
         #endregion
 
         #region Font Method
@@ -109,14 +71,62 @@ namespace Game_of_Life
         }
         #endregion
 
+        #region Form
+        //Creates the form for the game
+        public Form1()
+        {
+            InitializeComponent();
+            // Load Settings
+            LoadSettings();
+            // Setup the timer
+            ConditionChecks();
+            timer.Interval = interval; // milliseconds
+            timer.Tick += Timer_Tick;
+            timer.Enabled = false; // start timer running
+        }
+        #endregion
+
         #region Loader
+        private void ConditionChecks()
+        {
+            #region Toroidal & Finite
+            toroidalToolStripMenuItem.Checked = isToroidal;
+            if (isToroidal == false)
+            {
+                finiteToolStripMenuItem.Checked = true;
+            }
+            else
+            {
+                finiteToolStripMenuItem.Checked = false;
+            }
+            if (finiteToolStripMenuItem.Checked == false)
+            {
+                toroidalToolStripMenuItem.Checked = true;
+                isToroidal = true;
+            }
+            #endregion
+
+            #region Show Neighbors
+            neighborCountContextToolStripMenuItem1.Checked = showNeighbors;
+            neighborCountContextToolStripMenuItem1.Checked = showNeighbors;
+            #endregion
+
+            #region Grid
+            gridToolStripMenuItem.Checked = gridcheck;
+            gridToolContextStripMenuItem1.Checked = gridcheck;
+            #endregion
+
+            #region HUD
+            HUDToolStripMenuItem.Checked = hudCheck;
+            HUDToolContextStripMenuItem1.Checked = hudCheck;
+            #endregion
+        }
         // This "Loader" loads all of the settings prior to playing the game.
         private void LoadSettings()
         {
             // The settings will be initilizaed at the start of the game.
             //Main settings to load.
 
-            universe = new bool[uniWidth, uniHeight]; // The universe array
             uniWidth = Properties.Settings.Default.uniWidth; // The universe width
             uniHeight = Properties.Settings.Default.uniHeight; // The universe height
             interval = Properties.Settings.Default.interval; //  The timer speed
@@ -128,24 +138,11 @@ namespace Game_of_Life
             StatusLabelAlive.Text = $"Alive: {CellsLiving}"; // The live cells
             StatusLabelSeed.Text = $"Seed: {seed}"; // The seed to generate from
             gridcheck = Properties.Settings.Default.gridCheck; // The display grid
-            hudcheck = Properties.Settings.Default.hudCheck; // The display hud
+            hudCheck = Properties.Settings.Default.hudCheck; // The display hud
             gridColor = Properties.Settings.Default.gridColor; // The inner grid
             gridColorx10 = Properties.Settings.Default.gridColorx10; // The outer grid
             cellColor = Properties.Settings.Default.cellColor; // The living cell color
-        }
-        #endregion
-
-        #region Form
-        //Creates the form for the game
-        public Form1()
-        {
-            InitializeComponent();
-            // Load Settings
-            LoadSettings();
-            // Setup the timer
-            timer.Interval = 100; // milliseconds
-            timer.Tick += Timer_Tick;
-            timer.Enabled = false; // start timer running
+            universe = new bool[uniWidth, uniHeight]; // The universe array
         }
         #endregion
 
@@ -376,7 +373,7 @@ namespace Game_of_Life
                 $"Boundary Type: {boundaryType}\n" +
                 $"Universe Size: Width={uniWidth}, Height={uniHeight}";
             // Display Hud if "Checked"
-            if (hudcheck == true)
+            if (hudCheck == true)
             {
                 e.Graphics.DrawString(HUD, font, Brushes.Aqua, 0, 0);
             }
@@ -450,27 +447,23 @@ namespace Game_of_Life
         {
             // Starts the game
             timer.Enabled = true;
-            graphicsPanel1.Invalidate();
         }
         //Stop
         private void Stop_Click(object sender, EventArgs e) // Stop Button
         {
             //Stops the game
             timer.Enabled = false;
-            graphicsPanel1.Invalidate();
         }
         //Next
         private void Next_Click(object sender, EventArgs e) // Skip Button
         {
             NextGeneration();
-            timer.Enabled = false;
             graphicsPanel1.Invalidate();
         }
         //Slow
         private void Slow_Click(object sender, EventArgs e) // Slow Button
         {
-            timer.Interval = 1000;
-            timer.Start();
+            timer.Interval = interval + 200;
             graphicsPanel1.Invalidate();
         }
         #endregion
@@ -673,7 +666,7 @@ namespace Game_of_Life
                         // to the row string.
                         else if (universe[x, y] == false)
                         {
-                            currentRow = ".";
+                            currentRow += ".";
                         }
                     }
 
@@ -766,14 +759,13 @@ namespace Game_of_Life
                             {
                                 universe[xPos, yPos] = false;
                             }
-                            yPos++;
                         }
+                        yPos++;
                     }
                 }
 
                 // Close the file.
                 reader.Close();
-                universe = new bool[uniWidth, uniHeight]; // the universe array
                 // Repaint
                 graphicsPanel1.Invalidate();
             }
@@ -938,7 +930,7 @@ namespace Game_of_Life
         {
             // Keep the tool strip equal to the context menu
             HUDToolContextStripMenuItem1.Checked = HUDToolStripMenuItem.Checked;
-            hudcheck = HUDToolStripMenuItem.Checked;
+            hudCheck = HUDToolStripMenuItem.Checked;
             // repaint
             graphicsPanel1.Invalidate();
         }
@@ -991,7 +983,7 @@ namespace Game_of_Life
         {
             // Keeps the context menu equal to toolstrip
             HUDToolStripMenuItem.Checked = HUDToolContextStripMenuItem1.Checked;
-            hudcheck = HUDToolContextStripMenuItem1.Checked;
+            hudCheck = HUDToolContextStripMenuItem1.Checked;
             // Repaint
             graphicsPanel1.Invalidate();
         }
@@ -1047,7 +1039,43 @@ namespace Game_of_Life
             Properties.Settings.Default.uniHeight = uniHeight; ;
             Properties.Settings.Default.uniWidth = uniWidth;
             Properties.Settings.Default.interval = interval;
+            Properties.Settings.Default.PanelColor = graphicsPanel1.BackColor;
+            Properties.Settings.Default.gridColor = gridColor;
+            Properties.Settings.Default.gridColorx10 = gridColorx10;
+            Properties.Settings.Default.cellColor = cellColor;
+            Properties.Settings.Default.Seed = seed;
+            Properties.Settings.Default.isToridial = isToroidal;
+            Properties.Settings.Default.showNeighbors = showNeighbors;
+            Properties.Settings.Default.gridCheck = gridcheck;
+            Properties.Settings.Default.hudCheck = hudCheck;
+
+
+            Properties.Settings.Default.Save();
         }
         #endregion
+
+        private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // set the seen equal to the time
+            seed = (int)DateTime.Now.Ticks % int.MaxValue;
+            if (seed < 0)
+            {
+                seed *= -1;
+            }
+            // pass in the new seed
+            Randomize();
+            // Display the new seed
+            StatusLabelSeed.Text = $"Seed: {seed}";
+            // repaint
+            graphicsPanel1.Invalidate();
+        }
+
+        private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Randomize from whatever the seed is currently
+            Randomize();
+            // repaint
+            graphicsPanel1.Invalidate();
+        }
     }
 }
