@@ -783,6 +783,7 @@ namespace Game_of_Life
 
         #region Options Button System
         //Options
+        //Also buttons that directly impact the user experience
         private void optionsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             // Construct the options form
@@ -946,6 +947,7 @@ namespace Game_of_Life
         #endregion
 
         #region Finite and Toroidal Buttons
+        //The buttons that change the way the application works
         private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Keep Toroidal and Finite opposite
@@ -984,7 +986,7 @@ namespace Game_of_Life
         #endregion
 
         #region Context Menu Strip
-
+        //View and Color Methods
         #region View
         //View context strip button click
         //Hud
@@ -1043,6 +1045,7 @@ namespace Game_of_Life
         #endregion
 
         #region Form Closed
+        //Closes the form
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             Properties.Settings.Default.uniHeight = uniHeight; ;
