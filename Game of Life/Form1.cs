@@ -36,7 +36,7 @@ namespace Game_of_Life
         bool isToroidal = Properties.Settings.Default.isToridial;
         bool showNeighbors = Properties.Settings.Default.showNeighbors;
         bool gridcheck = Properties.Settings.Default.gridCheck;
-        bool hudCheck = Properties.Settings.Default.hudCheck;
+        bool hudcheck = Properties.Settings.Default.hudCheck;
         // The Interval System
         public int interval = Properties.Settings.Default.interval; // timer speed
 
@@ -48,6 +48,44 @@ namespace Game_of_Life
 
         // Generation count
         int generations = 0;
+        #endregion
+
+        #region Checker
+        private void ConditionChecks()
+        {
+            #region The HUD
+            HUDToolStripMenuItem.Checked = hudcheck;
+            HUDToolContextStripMenuItem1.Checked = hudcheck;
+            #endregion
+
+            #region Toroidal / Finite
+            toroidalToolStripMenuItem.Checked = isToroidal;
+            if (isToroidal == false)
+            {
+                finiteToolStripMenuItem.Checked = true;
+            }
+            else
+            {
+                finiteToolStripMenuItem.Checked = false;
+            }
+            if (finiteToolStripMenuItem.Checked == false)
+            {
+                toroidalToolStripMenuItem.Checked = true;
+                isToroidal = true;
+            }
+            #endregion
+
+            #region The Grid
+            gridToolStripMenuItem.Checked = gridcheck;
+            gridToolContextStripMenuItem1.Checked = gridcheck;
+            #endregion
+
+            #region Show Neighbors
+            neighborCountToolStripMenuItem.Checked = showNeighbors;
+            neighborCountContextToolStripMenuItem1.Checked = showNeighbors;
+            #endregion
+
+        }
         #endregion
 
         #region Font Method
@@ -71,55 +109,7 @@ namespace Game_of_Life
         }
         #endregion
 
-        #region Form
-        //Creates the form for the game
-        public Form1()
-        {
-            InitializeComponent();
-            // Load Settings
-            LoadSettings();
-            // Setup the timer
-            timer.Interval = 100; // milliseconds
-            timer.Tick += Timer_Tick;
-            timer.Enabled = false; // start timer running
-        }
-        #endregion
-
         #region Loader
-        private void ConditionChecks()
-        {
-            #region Toroidal & Finite
-            toroidalToolStripMenuItem.Checked = isToroidal;
-            if (isToroidal == false)
-            {
-                finiteToolStripMenuItem.Checked = true;
-            }
-            else
-            {
-                finiteToolStripMenuItem.Checked = false;
-            }
-            if (finiteToolStripMenuItem.Checked == false)
-            {
-                toroidalToolStripMenuItem.Checked = true;
-                isToroidal = true;
-            }
-            #endregion
-
-            #region Show Neighbors
-            neighborCountContextToolStripMenuItem1.Checked = showNeighbors;
-            neighborCountContextToolStripMenuItem1.Checked = showNeighbors;
-            #endregion
-
-            #region Grid
-            gridToolStripMenuItem.Checked = gridcheck;
-            gridToolContextStripMenuItem1.Checked = gridcheck;
-            #endregion
-
-            #region HUD
-            HUDToolStripMenuItem.Checked = hudCheck;
-            HUDToolContextStripMenuItem1.Checked = hudCheck;
-            #endregion
-        }
         // This "Loader" loads all of the settings prior to playing the game.
         private void LoadSettings()
         {
@@ -138,10 +128,24 @@ namespace Game_of_Life
             StatusLabelAlive.Text = $"Alive: {CellsLiving}"; // The live cells
             StatusLabelSeed.Text = $"Seed: {seed}"; // The seed to generate from
             gridcheck = Properties.Settings.Default.gridCheck; // The display grid
-            hudCheck = Properties.Settings.Default.hudCheck; // The display hud
+            hudcheck = Properties.Settings.Default.hudCheck; // The display hud
             gridColor = Properties.Settings.Default.gridColor; // The inner grid
             gridColorx10 = Properties.Settings.Default.gridColorx10; // The outer grid
             cellColor = Properties.Settings.Default.cellColor; // The living cell color
+        }
+        #endregion
+
+        #region Form
+        //Creates the form for the game
+        public Form1()
+        {
+            InitializeComponent();
+            // Load Settings
+            LoadSettings();
+            // Setup the timer
+            timer.Interval = 100; // milliseconds
+            timer.Tick += Timer_Tick;
+            timer.Enabled = false; // start timer running
         }
         #endregion
 
@@ -372,7 +376,7 @@ namespace Game_of_Life
                 $"Boundary Type: {boundaryType}\n" +
                 $"Universe Size: Width={uniWidth}, Height={uniHeight}";
             // Display Hud if "Checked"
-            if (hudCheck == true)
+            if (hudcheck == true)
             {
                 e.Graphics.DrawString(HUD, font, Brushes.Aqua, 0, 0);
             }
@@ -934,7 +938,7 @@ namespace Game_of_Life
         {
             // Keep the tool strip equal to the context menu
             HUDToolContextStripMenuItem1.Checked = HUDToolStripMenuItem.Checked;
-            hudCheck = HUDToolStripMenuItem.Checked;
+            hudcheck = HUDToolStripMenuItem.Checked;
             // repaint
             graphicsPanel1.Invalidate();
         }
@@ -987,7 +991,7 @@ namespace Game_of_Life
         {
             // Keeps the context menu equal to toolstrip
             HUDToolStripMenuItem.Checked = HUDToolContextStripMenuItem1.Checked;
-            hudCheck = HUDToolContextStripMenuItem1.Checked;
+            hudcheck = HUDToolContextStripMenuItem1.Checked;
             // Repaint
             graphicsPanel1.Invalidate();
         }
