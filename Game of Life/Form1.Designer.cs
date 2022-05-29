@@ -360,59 +360,59 @@
             // backColorToolStripMenuItem
             // 
             this.backColorToolStripMenuItem.Name = "backColorToolStripMenuItem";
-            this.backColorToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.backColorToolStripMenuItem.Size = new System.Drawing.Size(223, 34);
             this.backColorToolStripMenuItem.Text = "Back Color";
             this.backColorToolStripMenuItem.Click += new System.EventHandler(this.backColorToolStripMenuItem1_Click);
             // 
             // cellColorToolStripMenuItem
             // 
             this.cellColorToolStripMenuItem.Name = "cellColorToolStripMenuItem";
-            this.cellColorToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.cellColorToolStripMenuItem.Size = new System.Drawing.Size(223, 34);
             this.cellColorToolStripMenuItem.Text = "Cell Color";
             this.cellColorToolStripMenuItem.Click += new System.EventHandler(this.cellColorToolStripMenuItem_Click);
             // 
             // gridColorToolStripMenuItem
             // 
             this.gridColorToolStripMenuItem.Name = "gridColorToolStripMenuItem";
-            this.gridColorToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.gridColorToolStripMenuItem.Size = new System.Drawing.Size(223, 34);
             this.gridColorToolStripMenuItem.Text = "Grid Color";
             this.gridColorToolStripMenuItem.Click += new System.EventHandler(this.gridColorToolStripMenuItem_Click);
             // 
             // gridx10ColorToolStripMenuItem
             // 
             this.gridx10ColorToolStripMenuItem.Name = "gridx10ColorToolStripMenuItem";
-            this.gridx10ColorToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.gridx10ColorToolStripMenuItem.Size = new System.Drawing.Size(223, 34);
             this.gridx10ColorToolStripMenuItem.Text = "Gridx10 Color";
             this.gridx10ColorToolStripMenuItem.Click += new System.EventHandler(this.gridx10ColorToolStripMenuItem1_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(267, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(220, 6);
             // 
             // optionsToolStripMenuItem1
             // 
             this.optionsToolStripMenuItem1.Name = "optionsToolStripMenuItem1";
-            this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(270, 34);
+            this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(223, 34);
             this.optionsToolStripMenuItem1.Text = "Options";
             this.optionsToolStripMenuItem1.Click += new System.EventHandler(this.optionsToolStripMenuItem1_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(267, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(220, 6);
             // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(223, 34);
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
             // reloadToolStripMenuItem
             // 
             this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(223, 34);
             this.reloadToolStripMenuItem.Text = "Reload";
             this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
             // 

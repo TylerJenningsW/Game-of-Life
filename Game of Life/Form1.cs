@@ -13,6 +13,7 @@ namespace Game_of_Life
 {
     public partial class Form1 : Form
     {
+        // Regions to make things much more clear
         #region Members
 
         // The Universe Array
